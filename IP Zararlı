@@ -1,0 +1,64 @@
+from tkinter import *
+import datetime
+import requests
+import os
+​
+def get_vul_site_list():
+    response = requests.get("https://www.usom.gov.tr/url-list.txt", verify=False)
+    dosya = open("usom.txt", "w")
+    dosya.write(str(response.content))
+    dosya.close()
+​
+def kontrol_et():
+    dosya = open("usom.txt", "r")
+    icerik = dosya.read()
+    dosya.close()
+    ip = entry1.get()
+    bugun = datetime.datetime.now()
+    if ip in icerik:
+        dosya = open("log.txt", "a")
+        yazi = str(ip) + " Zararlı\n Tarih: " + str(bugun)+"\n"
+        dosya.write(yazi)
+        dosya.close()
+        v.set("IP Zararlıdır")
+    else:
+        dosya = open("log.txt", "a")
+        yazi = str(ip) + " Zararlı Değil\n Tarih: " + str(bugun)+"\n"
+        dosya.write(yazi)
+        dosya.close()
+        v.set("IP Zararlı Değildir")
+​
+pencere = Tk()
+pencere.title("USOM URL Kontrol Uygulaması")
+​
+if os.path.isfile("usom.txt"):
+    mtn = "USOM Liste Güncelle"
+else:
+    mtn = "USOM Liste İndir"
+​
+btn0 = Button(pencere, text=mtn, command=get_vul_site_list)
+btn0.place(x=50, y=10)
+btn0.pack()
+​
+label0 = Label(pencere, text="Kontrol edilecek URL")
+label0.place(x=50, y=80)
+label0.pack()
+​
+entry1 = Entry(pencere)
+entry1.place(x=50, y=100)
+entry1.pack()
+​
+label1 = Label(pencere, text="Sonuç")
+label1.place(x=50, y=120)
+label1.pack()
+​
+v = StringVar()
+entry2 = Entry(pencere, textvariable=v)
+entry2.place(x=50, y=130)
+entry2.pack()
+​
+btn1 = Button(pencere, text="Kontrol Et", command=kontrol_et)
+btn1.place(x=50, y=140)
+btn1.pack()
+​
+pencere.mainloop()
